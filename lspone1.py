@@ -9,7 +9,8 @@ import time
 import serial
 
 #connect pump
-lsp = serial.Serial('/dev/cu.usbserial-LSP18082_0RL102', 9600, timeout=10)
+#lsp = serial.Serial('/dev/cu.usbserial-LSP18082_0RL102', 9600, timeout=10)
+lsp = serial.Serial('COM4', 9600, timeout=10)
 
 #initialize pump
 lsp.write(b"/1ZR\r")
@@ -84,46 +85,53 @@ def dispense():
 
     
 import sys
-import termios
-import tty
+#import termios
+#import tty
+from pynput import keyboard
 import os
+import msvcrt
 inkey_buffer = 1
-def inkey():
-        fd=sys.stdin.fileno()
-        remember_attributes=termios.tcgetattr(fd)
-        tty.setraw(sys.stdin.fileno())
-        character=sys.stdin.read(inkey_buffer)
-        termios.tcsetattr(fd,termios.TCSADRAIN, remember_attributes)
-        return character
 
+#def inkey():
+#        fd=sys.stdin.fileno()
+#        remember_attributes=termios.tcgetattr(fd)
+#        tty.setraw(sys.stdin.fileno())
+#        character=sys.stdin.read(inkey_buffer)
+#        termios.tcsetattr(fd,termios.TCSADRAIN, remember_attributes)
+#        
+#        return character
+    
 while 1:
-    key = (inkey())
-    if key == '1':
-        pickup()
-        print (" pickup " + str(pic_volume) + "nl, current volume: " + str(position * 8) + "nl")
-        
-    if key == '2':
-        print ("dispense " + str(position * 8) + "nl")
-        dispense()
-        print ("syringe position: " + str(position))
+    #key = (inkey())
+    if msvcrt.kbhit():
+        key = msvcrt.getch().decode('ASCII')
+           
+        if key == 'a':
+            pickup()
+            print (" pickup " + str(pic_volume) + "nl, current volume: " + str(position * 8) + "nl")
+                
+        if key == 'c':
+            print ("dispense " + str(position * 8) + "nl")
+            dispense()
+            print ("syringe position: " + str(position))
 
-    if key == 'v':
-        change_volume()
-        
-    if key == 'i':
-        initialize()
+        if key == 'v':
+            change_volume()
+               
+        if key == 'i':
+            initialize()
 
-    if key == 'f':
-        fill_tube() #fill from valve 1 to valve 2 with 15 times 20 µl (300 µl)
+        if key == 'f':
+            fill_tube() #fill from valve 1 to valve 2 with 15 times 20 µl (300 µl)
 
-    if key == 'c':
-        clean_tube()#fill from valve 1 to valve 2 with 5 times 20 µl (100 µl)
+        if key == 'c':
+            clean_tube()#fill from valve 1 to valve 2 with 5 times 20 µl (100 µl)
 
-    if key == 'p':
-        push_out_100()#push out 100 nl from reservoir
+        if key == 'p':
+            push_out_100()#push out 100 nl from reservoir
 
-    if key == 'q':
-        exit()
+        if key == 'q':
+            exit()
             
 
 
